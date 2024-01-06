@@ -34,6 +34,25 @@ class FileStorage:
             return new_dict
         return self.__objects
 
+    def get(self, cls, id):
+        """
+        gets the obj with the id passed
+        """
+        if not cls or not id:
+            return None
+        objs = self.all(cls)
+        for obj in objs:
+            if objs[obj].id == id:
+                return objs[obj]
+
+    def count(self, cls=None):
+        """
+        gets the counts of the class passed or all classes if none is passed
+        """
+        objs = self.all(cls)
+        total = len(objs)
+        return total
+
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
         if obj is not None:
