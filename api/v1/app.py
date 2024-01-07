@@ -2,6 +2,7 @@
 """
 main api app
 """
+from api.v1.views import app_views
 from flask import Flask
 import models
 from models.amenity import Amenity
@@ -10,18 +11,20 @@ from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
+from models import storage
 from models.user import User
 from os import getenv
 
 app = Flask(__name__)
+app.register_blueprint(app_views)
 
 
-@app.route("/api/v1/status", strict_slashes=False)
-def status():
+@app.teardown_appcontext
+def close_db(obj):
     """
-    app status
+    closes storage
     """
-    return {"status": "OK"}
+    storage.close()
 
 
 if __name__ == "__main__":
