@@ -8,7 +8,7 @@ from models import storage
 from models.state import State
 
 
-@api_views.route("/states", methods=["GET"], strict_slashes=False)
+@app_views.route("/states", methods=["GET"], strict_slashes=False)
 def get_states():
     """
     gets all states from the database
