@@ -7,7 +7,8 @@ from flask import jsonify, abort, request, make_response
 from models import storage
 from models.state import State
 
-@app_views.route("/states", methods=["GET"], strict_slashes=False)
+
+@api_views.route("/states", methods=["GET"], strict_slashes=False)
 def get_states():
     """
     gets all states from the database
@@ -28,7 +29,8 @@ def get_state(state_id):
     return jsonify(state.to_dict())
 
 
-@app_views.route("/states/<state_id>", methods=["DELETE"], strict_slashes=False)
+@app_views.route("/states/<state_id>", methods=["DELETE"],
+                 strict_slashes=False)
 def del_state(state_id):
     """
     deletes the state with the given id
@@ -67,7 +69,7 @@ def put_state(state_id):
     if not request.get_json():
         return make_request(jsonify({"error": "Not a JSON"}), 400)
     request_body = request.get_json()
-    
+
     for k, v in request_body.items():
         if k not in ["id", "created_at", "updated_at"]:
             setattr(state, k, v)
