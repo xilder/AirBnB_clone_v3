@@ -4,8 +4,8 @@ State module
 """
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
-from models import storage
 from models.state import State
+from models import storage
 
 
 @app_views.route("/states", methods=["GET"], strict_slashes=False)
@@ -46,7 +46,7 @@ def del_state(state_id):
 @app_views.route("/states", methods=["POST"], strict_slashes=False)
 def post_state():
     """
-    adds a state
+    it creates a new state
     """
     if not request.get_json():
         return make_request(jsonify({"error": "Not a JSON"}), 400)
@@ -61,7 +61,7 @@ def post_state():
 @app_views.route("/states/<state_id>", methods=["PUT"], strict_slashes=False)
 def put_state(state_id):
     """
-    updates a state
+    it updates a state by updating parameters
     """
     state = storage.get("State", state_id)
     if state is None:
