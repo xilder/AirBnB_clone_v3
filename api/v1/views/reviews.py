@@ -4,84 +4,89 @@ Place module
 """
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
-from models.place import Place
+from models.review import Review
 from models import storage
 
 
-@app_views.route("/cities/<city_id>/places", methods=["GET"],
+@app_views.route("/places/<place_id>/reviews", methods=["GET"],
                  strict_slashes=False)
-def get_places(city_id):
+def get_reviews(place_id):
     """
-    gets all places from the database
-    """
-    city = storage.get("City", city_id)
-    if not city:
-        abort(404)
-    all_places = city.places
-    list_places = [obj.to_dict() for obj in all_places]
-    return jsonify(list_places)
-
-
-@app_views.route("/places/<place_id>", methods=["GET"], strict_slashes=False)
-def get_place(place_id):
-    """
-    gets the place with the id
+    gets all reviews with the place_id
     """
     place = storage.get("Place", place_id)
-    if place is None:
+    if not place:
         abort(404)
-    return jsonify(place.to_dict())
+    all_reviews = place.reviews
+    list_reviews = [obj.to_dict() for obj in all_reviews]
+    return jsonify(list_reviews)
 
 
-@app_views.route("/places/<place_id>",
+@app_views.route("/reviews/<review_id>", methods=["GET"], strict_slashes=False)
+def get_review(review_id):
+    """
+    gets the review with the id
+    """
+    review = storage.get("Review", review_id)
+    if review is None:
+        abort(404)
+    return jsonify(review.to_dict())
+
+
+@app_views.route("/reviews/<review_id>",
                  methods=["DELETE"], strict_slashes=False)
-def del_place(place_id):
+def del_review(review_id):
     """
-    deletes the place with the given id
+    deletes the review with the given id
     """
-    place = storage.get("Place", place_id)
-    if place is None:
+    review = storage.get("Review", review_id)
+    if review is None:
         abort(404)
-    storage.delete(place)
+    storage.delete(review)
     storage.save()
     return make_response(jsonify({}), 200)
 
 
-@app_views.route("/cities/<city_id>/places", methods=["POST"], strict_slashes=False)
-def post_place(city_id):
+@app_views.route("/places/<place_id>/reviews", methods=["POST"],
+                 strict_slashes=False)
+def post_review(place_id):
     """
-    it creates a new place
+    it creates a new review
     """
     if not request.get_json():
         return make_response(jsonify({"error": "Not a JSON"}), 400)
-    if "name" not in request.get_json():
-        return make_response(jsonify({"error": "Missing a name"}), 400)
     if "user_id" not in request.get_json():
         return make_response(jsonify({"error": "Missing user_id"}), 400)
-    place_obj = request.get_json()
-    user = storage.get("User", place_obj["user_id"])
-    place_obj["city_id"] = city_id
+    if "text" not in request.get_json():
+        return make_response(jsonify({"error": "Missing text"}), 400)
+    review_obj = request.get_json()
+    user = storage.get("User", review_obj["user_id"])
+    place = storage.get("Place", place_id)
+    if not place:
+        abort(404)
+    review_obj["place_id"] = place_id
     if not user:
         abort(404)
-    place = Place(**place_obj)
-    place.save()
-    return make_response(jsonify(place.to_dict()), 201)
+    review = Review(**review_obj)
+    review.save()
+    return make_response(jsonify(review.to_dict()), 201)
 
 
-@app_views.route("/places/<place_id>", methods=["PUT"], strict_slashes=False)
-def put_place(place_id):
+@app_views.route("/reviews/<review_id>", methods=["PUT"],
+                 strict_slashes=False)
+def put_review(review_id):
     """
-    it updates a place by updating parameters
+    it updates a review by updating parameters
     """
-    place = storage.get("Place", place_id)
-    if place is None:
+    review = storage.get("Review", review_id)
+    if review is None:
         abort(404)
     if not request.get_json():
         make_response(jsonify({"error": "Not a JSON"}), 400)
     request_body = request.get_json()
 
     for k, v in request_body.items():
-        if k not in ["id", "user_id", "city_id", "created_at", "updated_at"]:
-            setattr(place, k, v)
-    place.save()
-    return make_response(jsonify(place.to_dict()), 200)
+        if k not in ["id", "user_id", "place_id", "created_at", "updated_at"]:
+            setattr(review, k, v)
+    review.save()
+    return make_response(jsonify(review.to_dict()), 200)
