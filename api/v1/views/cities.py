@@ -53,7 +53,7 @@ def post_cities(state_id):
     """
     adds a city
     """
-    if not request.get_json():
+    if request.headers.get('Content-Type') != "application/json":
         return make_request(jsonify({"error": "Not a JSON"}), 400)
     if "name" not in request.get_json():
         return make_request(jsonify({"error": "Missing name"}), 400)
