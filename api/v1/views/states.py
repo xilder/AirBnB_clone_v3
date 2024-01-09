@@ -49,9 +49,9 @@ def post_state():
     it creates a new state
     """
     if not request.get_json():
-        return make_request(jsonify({"error": "Not a JSON"}), 400)
+        return abort(400, "Not a JSON")
     if "name" not in request.get_json():
-        return make_request(jsonify({"error": "Missing name"}), 400)
+        return abort(400, "Missing a name")
     state_obj = request.get_json()
     state = State(**state_obj)
     state.save()
@@ -67,7 +67,7 @@ def put_state(state_id):
     if state is None:
         abort(404)
     if not request.get_json():
-        return make_request(jsonify({"error": "Not a JSON"}), 400)
+        return abort(400, "Not")
     request_body = request.get_json()
 
     for k, v in request_body.items():

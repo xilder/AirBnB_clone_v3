@@ -3,7 +3,6 @@
 blueprint for app_views
 """
 from api.v1.views import app_views
-from models.engine.db_storage import classes
 from flask import jsonify
 from models import storage
 
