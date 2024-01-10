@@ -5,20 +5,16 @@ main api app
 from api.v1.views import app_views
 from flask import Flask
 import models
-from models.amenity import Amenity
-from models.base_model import BaseModel
-from models.city import City
 from flask import jsonify
 from flask import make_response
-from models.place import Place
-from models.review import Review
-from models.state import State
 from models import storage
-from models.user import User
 from os import getenv
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
+cors = CORS(app, resources={r"/api/*": {"origins": "0.0.0.0"}})
 
 
 @app.teardown_appcontext
