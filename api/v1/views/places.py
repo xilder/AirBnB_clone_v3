@@ -88,3 +88,57 @@ def put_place(place_id):
             setattr(place, k, v)
     place.save()
     return make_response(jsonify(place.to_dict()), 200)
+
+
+@app_views.route('/places_search', methods=['POST'],
+                 strict_slashes=False)
+def search_places_by_id():
+    """
+    search places by id
+    """
+    list_places = []
+    params = request.get_json()
+    if not params:
+        return make_response(jsonify({"error": "Not a JSON"}), 400)
+    if params and len(params):
+        states = params.get("states", None)
+        cities = params.get("cities", None)
+        amenities = params.get("amenities", None)
+    if not params or not len(params) or (
+            not states and
+            not cities and
+            not amenities):
+        places = storage.all("Place").values()
+        list_places = [place.to_dict() for place in places]
+        return jsonify(list_places)
+    if states:
+        states_obj = [storage.get("State", state_id) for state_id in states]
+        for state in states_obj:
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        list_places.append(place)
+
+    if cities:
+        cities_obj = [storage.get("City", city_id) for city_id in cities]
+        for city in cities_obj:
+            if city:
+                for place in city.places:
+                    if place not in list_places:
+                        list_places.append(place)
+
+    if amenities:
+        if not list_places:
+            list_places = storage.all("Place").values()
+        amenities_obj = [storage.get("Amenity", amenity_id)
+                for amenity_id in amenities]
+        list_places = [place for place in list_places
+                       if all([amenity in place.amenities
+                               for amenity in amenities_obj])]
+    new_list = []
+    for place in list_places:
+        place = place.to_dict()
+        place.pop("amenities", None)
+        new_list.append(place)
+    return jsonify(new_list)
+
