@@ -119,10 +119,27 @@ function appendPlaces (data) {
                 <DIV class="description">
                   ${place.description}
                 </DIV>
-		 <div class="reviews" data-place="${place.id}">
-					<h2></h2>
-					<ul></ul>
-				  </div>
+		<div class="reviews">
+          <h2>Reviews <span class="reviewSpan" data-id="${place.id}">show</span></h2>
+          <ul>
+          </ul>
+          </div>
+
               </ARTICLE>`;
+	  $('SECTION.places').append(place_holder);
   });
+	$('.reviewSpan').click(function (event) {
+        	console.log('here');
+        	$.ajax(`${api}:5001/api/v1/places/${$(this).attr('data-id')}/reviews`).done(function (data) {
+                	if ($('span').text('show')) {
+                        	for (const review of data) {
+                                	$('.reviews ul').append(`<li>${review.text}</li>`);
+                        	}
+                        	$('span').text('hide');
+                	} else {
+                        	$('.reviews ul').empty();
+                        	$('span').text('show');
+                	}
+		});
+	});
 }
