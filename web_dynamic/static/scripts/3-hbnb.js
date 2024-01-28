@@ -28,28 +28,31 @@ $('document').ready(() => {
     success: function (data) {
       $('SECTION.places').append(data.map(place => {
         return `<ARTICLE>
-                  <DIV class="title">
+                  <DIV class="title_box">
                     <H2>${place.name}</H2>
                     <DIV class="price_by_night">
-                      ${place.price_by_night}
+                      \$${place.price_by_night}
                     </DIV>
                   </DIV>
                   <DIV class="information">
                     <DIV class="max_guest">
                       <I class="fa fa-users fa-3x" aria-hidden="true"></I>
                       </BR>
-                      ${place.max_guest} Guests
-                    </DIV>
+                      ${place.max_guest} Guest${
+			      place.max_guest > 1 ? 's' : ''
+		      }</DIV>
                     <DIV class="number_rooms">
                       <I class="fa fa-bed fa-3x" aria-hidden="true"></I>
                       </BR>
-                      ${place.number_rooms} Bedrooms
-                    </DIV>
+                      ${place.number_rooms} Bedroom${
+			      place.number_rooms > 1 ? 's' : ''
+		      }</DIV>
                     <DIV class="number_bathrooms">
                       <I class="fa fa-bath fa-3x" aria-hidden="true"></I>
                       </BR>
-                      ${place.number_bathrooms} Bathrooms
-                    </DIV>
+                      ${place.number_bathrooms} Bathroom${
+			      place.number_bathrooms > 1 ? 's' : ''
+		      }</DIV>
                   </DIV>
                   <DIV class="description">
                     ${place.description}
